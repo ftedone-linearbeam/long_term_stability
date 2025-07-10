@@ -79,7 +79,7 @@ if uploaded_file:
                 media_norm=normalized_data.mean()
 
                 # Plot normalizzato
-                st.subheader("Grafico delle misurazioni normalizzate")
+                st.subheader("Grafico delle misurazioni filtrate e normalizzate")
     
                 fig2 = go.Figure()
                 fig2.add_trace(go.Scatter(x=filtered_time, y=normalized_data,
@@ -125,7 +125,7 @@ if uploaded_file:
                 fig3, ax3 = plt.subplots()
                 ax3.plot(filtered_time, normalized_data, marker='o', linestyle='-', color='green')
                 ax3.set_xlabel("Tempo (s)")
-                ax3.set_ylabel("(-)")
+                ax3.set_ylabel("Valori normalizzati (-)")
                 ax3.grid(True)
                 fig3.savefig(img_buffer, format="png", bbox_inches="tight")
                 img_buffer.seek(0)
@@ -149,7 +149,7 @@ if uploaded_file:
                               line=dict(color='blue')))
                 fig1.update_layout(
                     xaxis_title="Tempo (s)",
-                    yaxis_title="Corrente (-)",
+                    yaxis_title="Valori normalizzati (-)",
                     hovermode="x unified"
                 )
                 st.plotly_chart(fig1, use_container_width=True)
@@ -157,7 +157,7 @@ if uploaded_file:
                 st.subheader("Dati Filtrati")
                 st.dataframe(pd.DataFrame({
                     "Tempo (s)": filtered_time,
-                    "Corrente (-)": filtered_data
+                    "Dati normalizzati (-)": filtered_data
                 }))
 
                 st.subheader("Download")
