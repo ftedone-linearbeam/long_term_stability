@@ -3,6 +3,5 @@ pandas
 openpyxl
 numpy
 matplotlib
-io
-tempfile
 plotly
+xlsxwriter
