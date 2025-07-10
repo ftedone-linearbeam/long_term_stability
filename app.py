@@ -3,12 +3,22 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-st.title("Analisi Misurazioni Elettriche (mA)")
+st.title("Analisi misurazioni elettriche (mA)")
 
 # Caricamento file Excel
 uploaded_file = st.file_uploader("Carica file Excel", type=["xlsx", "xls"])
 if uploaded_file:
     df = pd.read_excel(uploaded_file)
+    has_header = st.sidebar.checkbox("Il file ha intestazione?", value=True)
+
+    try:
+        if has_header:
+            df = pd.read_excel(uploaded_file, engine="openpyxl", header=0)
+        else:
+            df = pd.read_excel(uploaded_file, engine="openpyxl", header=None)
+            # Rinomina colonne con nomi generici
+            df.columns = [f"Colonna {i+1}" for i in range(df.shape[1])]
+    
     st.subheader("Anteprima del file")
     st.dataframe(df.head())
 
