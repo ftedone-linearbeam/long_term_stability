@@ -14,7 +14,6 @@ uploaded_file = st.file_uploader("Carica file Excel", type=["xlsx", "xls"])
 if uploaded_file:
     st.sidebar.subheader("Opzioni file")
     has_header = st.sidebar.checkbox("Il file ha intestazione?", value=False)
-
     try:
         if has_header:
             df = pd.read_excel(uploaded_file, engine="openpyxl", header=0)
@@ -31,14 +30,23 @@ if uploaded_file:
         data = df[selected_column].dropna().reset_index(drop=True)
         if selected_column and not data.empty:
             time = np.arange(len(data))
-
             # Sidebar filtri
             st.sidebar.header("Filtri")
             min_val = float(data.min())
             max_val = float(data.max())
-            soglia_inf = st.sidebar.number_input("Soglia inferiore (>="+f"{min_val:.2f}"+"μA)", min_val, max_val, min_val)
-            soglia_sup = st.sidebar.number_input("Soglia superiore (<="+f"{min_val:.2f}"+"μA)", min_val, max_val, max_val)
+            
+            if abs(data.mean()-1)<0.2:
+                is_normalized=st.sidebar.checkbox("I dati sono già normalizzati?", value=False)
+            else:
+                is_normalized=st.sidebar.checkbox("I dati sono già normalizzati?", value=True)
 
+            if is_normalized:
+                soglia_inf = st.sidebar.number_input("Soglia inferiore (>="+f"{min_val:.2f}"+")", min_val, max_val, min_val)
+                soglia_sup = st.sidebar.number_input("Soglia superiore (<="+f"{min_val:.2f}"+")", min_val, max_val, max_val)
+            else:
+                soglia_inf = st.sidebar.number_input("Soglia inferiore (>="+f"{min_val:.2f}"+"μA)", min_val, max_val, min_val)
+                soglia_sup = st.sidebar.number_input("Soglia superiore (<="+f"{min_val:.2f}"+"μA)", min_val, max_val, max_val)
+            
             # Filtraggio dati
             mask = (data >= soglia_inf) & (data <= soglia_sup)
             filtered_data = data[mask]
