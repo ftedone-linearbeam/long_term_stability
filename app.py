@@ -120,7 +120,6 @@ if uploaded_file:
 
             st.subheader("Grafico delle misurazioni normalizzate")
             fig2 = plot_interactive(filtered_time, normalized_data, "Tempo (s)", "(-)", color='green')
-            st.plotly_chart(fig2, use_container_width=True)
             col1, col2 = st.columns(2)
             with col1:
                 x_min = st.number_input("Limite minimo asse X fig2 (s)", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()))
@@ -130,6 +129,7 @@ if uploaded_file:
                 y_max = st.number_input("Limite massimo asse Y fig2", value=float(normalized_data.max()))
             fig2.update_xaxes(range=[x_min, x_max])
             fig2.update_yaxes(range=[y_min, y_max])
+            st.plotly_chart(fig2, use_container_width=True)
 
             media_norm = normalized_data.mean()
             st.markdown(f"**Media normalizzata**: {media_norm:.4f}")
