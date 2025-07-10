@@ -74,7 +74,18 @@ if uploaded_file:
                     hovermode="x unified"
                 )
                 st.plotly_chart(fig1, use_container_width=True)
-    
+                with Col1:
+                    # Assi X (tempo)
+                    x_min = st.number_input("Limite minimo asse X (secondi)", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()))
+                    x_max = st.number_input("Limite massimo asse X (secondi)", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()))
+                with Col2:
+                    # Assi Y (corrente, in μA o unità che usi)
+                    y_min = st.number_input("Limite minimo asse Y", value=float(filtered_data.min()))
+                    y_max = st.number_input("Limite massimo asse Y", value=float(filtered_data.max()))
+
+                fig1.update_xaxes(range=[x_min, x_max])
+                fig1.update_yaxes(range=[y_min, y_max])
+
                 normalized_data = filtered_data / media
                 media_norm=normalized_data.mean()
 
@@ -92,7 +103,19 @@ if uploaded_file:
                     hovermode="x unified"
                 )
                 st.plotly_chart(fig2, use_container_width=True)
-            
+                with Col1:
+                    # Assi X (tempo)
+                    x_min = st.number_input("Limite minimo asse X (secondi)", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()))
+                    x_max = st.number_input("Limite massimo asse X (secondi)", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()))
+                with Col2:
+                    # Assi Y (corrente, in μA o unità che usi)
+                    y_min = st.number_input("Limite minimo asse Y", value=float(normalized_data.min()))
+                    y_max = st.number_input("Limite massimo asse Y", value=float(normalized_data.max()))
+
+                fig2.update_xaxes(range=[x_min, x_max])
+                fig2.update_yaxes(range=[y_min, y_max])
+
+
                 # Tabella filtrata
                 st.subheader("Dati Filtrati")
                 st.dataframe(pd.DataFrame({
@@ -153,13 +176,25 @@ if uploaded_file:
                     hovermode="x unified"
                 )
                 st.plotly_chart(fig1, use_container_width=True)
+                [Col1,Col2]=st.columns(2)
+                with Col1:
+                    # Assi X (tempo)
+                    x_min = st.number_input("Limite minimo asse X (secondi)", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()))
+                    x_max = st.number_input("Limite massimo asse X (secondi)", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()))
+                with Col2:
+                    # Assi Y (corrente, in μA o unità che usi)
+                    y_min = st.number_input("Limite minimo asse Y", value=float(filtered_data.min()))
+                    y_max = st.number_input("Limite massimo asse Y", value=float(filtered_data.max()))
+
+                fig1.update_xaxes(range=[x_min, x_max])
+                fig1.update_yaxes(range=[y_min, y_max])
+                
                 # Tabella filtrata
                 st.subheader("Dati Filtrati")
                 st.dataframe(pd.DataFrame({
                     "Tempo (s)": filtered_time,
                     "Dati normalizzati (-)": filtered_data
                 }))
-
                 st.subheader("Download")
                 
                 # ---- Esportazione in Excel ----
