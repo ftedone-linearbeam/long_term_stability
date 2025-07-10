@@ -91,13 +91,46 @@ if uploaded_file:
                 st.subheader("Grafico delle misurazioni filtrate")
                 fig1 = plot_interactive(filtered_time, filtered_data, "Tempo (s)", "Corrente (μA)", color='blue')
                 st.plotly_chart(fig1, use_container_width=True)
+                col1, col2 = st.columns(2)
+                with col1:
+                    x_min = st.number_input("Limite minimo asse X (s)", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()))
+                    x_max = st.number_input("Limite massimo asse X (s)", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()))
+                with col2:
+                    y_min = st.number_input("Limite minimo asse Y", value=float(filtered_data.min()))
+                    y_max = st.number_input("Limite massimo asse Y", value=float(filtered_data.max()))
+                fig1.update_xaxes(range=[x_min, x_max])
+                fig1.update_yaxes(range=[y_min, y_max])
                 normalized_data = filtered_data / filtered_data.mean()
             else:
                 normalized_data = filtered_data
+                st.subheader("Grafico delle misurazioni filtrate e normalizzate")
+                fig1 = plot_interactive(filtered_time, normalized_data, "Tempo (s)", "Valori normalizzati (-)", color='blue')
+                st.plotly_chart(fig1, use_container_width=True)
+                col1, col2 = st.columns(2)
+                with col1:
+                    x_min = st.number_input("Limite minimo asse X (s)", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()))
+                    x_max = st.number_input("Limite massimo asse X (s)", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()))
+                with col2:
+                    y_min = st.number_input("Limite minimo asse Y", value=float(normalized_data.min()))
+                    y_max = st.number_input("Limite massimo asse Y", value=float(normalized_data.max()))
+                fig1.update_xaxes(range=[x_min, x_max])
+                fig1.update_yaxes(range=[y_min, y_max])
 
             st.subheader("Grafico delle misurazioni normalizzate")
             fig2 = plot_interactive(filtered_time, normalized_data, "Tempo (s)", "(-)", color='green')
             st.plotly_chart(fig2, use_container_width=True)
+            col1, col2 = st.columns(2)
+            with col1:
+                x_min = st.number_input("Limite minimo asse X fig2 (s)", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()))
+                x_max = st.number_input("Limite massimo asse X fig2 (s)", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()))
+            with col2:
+                y_min = st.number_input("Limite minimo asse Y fig2", value=float(normalized_data.min()))
+                y_max = st.number_input("Limite massimo asse Y fig2", value=float(normalized_data.max()))
+            fig2.update_xaxes(range=[x_min, x_max])
+            fig2.update_yaxes(range=[y_min, y_max])
+
+            media_norm = normalized_data.mean()
+            st.markdown(f"**Media normalizzata**: {media_norm:.4f}")
 
             result_df = pd.DataFrame({
                 "Tempo (s)": filtered_time,
@@ -125,6 +158,7 @@ if uploaded_file:
                 - **Minimo**: {stats['min']:.3f} μA
                 - **Massimo**: {stats['max']:.3f} μA
                 - **Media**: {stats['mean']:.3f} μA
+                - **Media normalizzata**: {media_norm:.3f}
                 - **Deviazione standard**: {stats['std']:.3f} μA
                 - **Flatness**: {stats['flatness']:.3f}
                 - **Totale secondi fuori soglia**: {stats['fuori_soglia']} ({stats['fuori_soglia']/len(data):.2%})
