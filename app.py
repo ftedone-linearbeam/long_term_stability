@@ -59,7 +59,7 @@ uploaded_file = st.file_uploader("Carica file Excel", type=["xlsx", "xls"])
 
 if uploaded_file:
     st.sidebar.subheader("Opzioni file")
-    has_header = st.sidebar.checkbox("Il file ha intestazione?", value=False)
+    has_header = st.sidebar.checkbox("Il file ha intestazione", value=False)
 
     try:
         df = read_excel_file(uploaded_file, has_header)
@@ -78,7 +78,7 @@ if uploaded_file:
             if abs(data.mean() - 1) < 0.2:
                 st.session_state["normalized_estimation"] = True
 
-            is_normalized = st.sidebar.checkbox("I dati sono già normalizzati?", value=st.session_state["normalized_estimation"])
+            is_normalized = st.sidebar.checkbox("I dati sono già normalizzati", value=st.session_state["normalized_estimation"])
 
             soglia_inf = st.sidebar.number_input("Soglia inferiore", min_val, max_val, min_val)
             soglia_sup = st.sidebar.number_input("Soglia superiore", min_val, max_val, max_val)
@@ -100,6 +100,7 @@ if uploaded_file:
                     y_max = st.number_input("Limite massimo asse Y", value=float(filtered_data.max()))
                 fig1.update_xaxes(range=[x_min, x_max])
                 fig1.update_yaxes(range=[y_min, y_max])
+                st.plotly_chart(fig1, use_container_width=True)
                 normalized_data = filtered_data / filtered_data.mean()
             else:
                 normalized_data = filtered_data
