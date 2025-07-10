@@ -109,7 +109,11 @@ if uploaded_file:
 
             # ---- Esportazione grafico come immagine PNG ----
             img_buffer = BytesIO()
-            fig2.savefig(img_buffer, format="png", bbox_inches="tight")
+            fig3, ax3 = plt.subplots()
+            ax3.plot(filtered_time, normalized_data, marker='o', linestyle='-', color='green')
+            ax3.set_xlabel("Tempo (s)")
+            ax3.set_ylabel("(-)")
+            ax3.grid(True)fig3.savefig(img_buffer, format="png", bbox_inches="tight")
             img_buffer.seek(0)
 
             st.download_button(
