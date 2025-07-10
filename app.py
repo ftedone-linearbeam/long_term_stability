@@ -69,6 +69,8 @@ if uploaded_file:
                 massimo = filtered_data.max()
                 std_dev = filtered_data.std()
                 flatness = ((massimo / minimo - 1) / 2) if minimo != 0 else np.nan
+                fuori_soglia_mask = (data < soglia_inf) | (data > soglia_sup)
+                durata_fuori_soglia = fuori_soglia_mask.sum()
 
                 st.subheader("Statistiche")
                 st.markdown(f"""
@@ -78,10 +80,11 @@ if uploaded_file:
                 - **Media normalizzata**: {media_norm:.3f} mA
                 - **Deviazione standard**: {std_dev:.3f} mA  
                 - **Flatness**: {flatness:.3f}
+                - **Totale secondi fuori soglia**: {durata_fuori_soglia} s")
                 """)
 
                 # Punto 1: Istogramma distribuzione
-                st.subheader("Distribuzione dei Valori (Istogramma)")
+                st.subheader("Distribuzione dei valori")
                 fig3, ax3 = plt.subplots()
                 ax3.hist(filtered_data, bins=30, color='skyblue', edgecolor='black')
                 ax3.set_xlabel("Corrente (mA)")
@@ -89,8 +92,8 @@ if uploaded_file:
                 st.pyplot(fig3)
 
                 # Punto 2: Trend line (media mobile)
-                st.subheader("Trend Line (Media Mobile)")
-                window_size = st.sidebar.slider("Finestra Media Mobile", 1, 50, 5)
+                st.subheader("Trend line (media mobile)")
+                window_size = st.sidebar.slider("Finestra media mobile", 1, 1000, 5)
                 rolling_mean = filtered_data.rolling(window=window_size).mean()
                 fig4, ax4 = plt.subplots()
                 ax4.plot(filtered_time, filtered_data, label="Originale", alpha=0.5)
@@ -115,10 +118,6 @@ if uploaded_file:
                     }))
 
                 # Punto 4: Durata fuori soglia (in secondi)
-                st.subheader("Durata fuori soglia")
-                fuori_soglia_mask = (data < soglia_inf) | (data > soglia_sup)
-                durata_fuori_soglia = fuori_soglia_mask.sum()
-                st.markdown(f"**Totale secondi fuori soglia**: {durata_fuori_soglia} s")
 
             else:
                 st.warning("Nessun dato nei limiti specificati.")
