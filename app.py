@@ -84,14 +84,14 @@ if uploaded_file:
             
             is_normalized = st.sidebar.checkbox("I dati sono già normalizzati", value=st.session_state["normalized_estimation"],key="checkbox_normalized")
             
-            soglia_inf = st.sidebar.number_input("Soglia inferiore", min_val, max_val, min_val)
-            soglia_sup = st.sidebar.number_input("Soglia superiore", min_val, max_val, max_val)
+            soglia_inf = st.sidebar.number_input("Soglia inferiore", min_val, max_val, min_val,key="soglia_inf")
+            soglia_sup = st.sidebar.number_input("Soglia superiore", min_val, max_val, max_val,key="soglia_sup")
 
-            mask = (data >= soglia_inf) & (data <= soglia_sup)
+            mask = (norm_data >= soglia_inf) & (norm_data <= soglia_sup)
             filtered_data = norm_data[mask]
             filtered_time = time[mask]
 
-            if not is_normalized:
+            if is_normalized:
                 st.subheader("Grafico delle misurazioni filtrate")
                 fig1 = plot_interactive(filtered_time, filtered_data, "Tempo (s)", "Corrente (μA)", color='blue')
                 col1, col2 = st.columns(2)
@@ -104,9 +104,9 @@ if uploaded_file:
                 fig1.update_xaxes(range=[x_min, x_max])
                 fig1.update_yaxes(range=[y_min, y_max])
                 st.plotly_chart(fig1, use_container_width=True)
-                normalized_data = filtered_data / filtered_data.mean()
-            else:
                 normalized_data = filtered_data
+            else:
+                normalized_data = filtered_data / filtered_data.mean()
                 filtered_time = time[mask]
                 st.subheader("Grafico delle misurazioni filtrate e normalizzate")
                 fig1 = plot_interactive(filtered_time, normalized_data, "Tempo (s)", "Valori normalizzati (-)", color='blue')
@@ -121,18 +121,18 @@ if uploaded_file:
                 fig1.update_yaxes(range=[y_min, y_max])
                 st.plotly_chart(fig1, use_container_width=True)
 
-            st.subheader("Grafico delle misurazioni normalizzate")
-            fig2 = plot_interactive(filtered_time, normalized_data, "Tempo (s)", "(-)", color='green')
-            col1, col2 = st.columns(2)
-            with col1:
-                x_min = st.number_input("Limite minimo asse X", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()))
-                y_min = st.number_input("Limite minimo asse Y", value=float(normalized_data.min()))
-            with col2:
-                x_max = st.number_input("Limite massimo asse X", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()))
-                y_max = st.number_input("Limite massimo asse Y", value=float(normalized_data.max()))
-            fig2.update_xaxes(range=[x_min, x_max])
-            fig2.update_yaxes(range=[y_min, y_max])
-            st.plotly_chart(fig2, use_container_width=True)
+                st.subheader("Grafico delle misurazioni normalizzate")
+                fig2 = plot_interactive(filtered_time, normalized_data, "Tempo (s)", "(-)", color='green')
+                col1, col2 = st.columns(2)
+                with col1:
+                    x_min = st.number_input("Limite minimo asse X", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()))
+                    y_min = st.number_input("Limite minimo asse Y", value=float(normalized_data.min()))
+                with col2:
+                    x_max = st.number_input("Limite massimo asse X", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()))
+                    y_max = st.number_input("Limite massimo asse Y", value=float(normalized_data.max()))
+                fig2.update_xaxes(range=[x_min, x_max])
+                fig2.update_yaxes(range=[y_min, y_max])
+                st.plotly_chart(fig2, use_container_width=True)
 
             media_norm = normalized_data.mean()
 
