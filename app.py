@@ -41,7 +41,7 @@ if uploaded_file:
             filtered_time = time[mask]
 
             # Plot originale
-            st.subheader("Grafico delle Misurazioni Filtrate")
+            st.subheader("Grafico delle misurazioni filtrate")
             fig1, ax1 = plt.subplots()
             ax1.plot(filtered_time, filtered_data, marker='o', linestyle='-')
             ax1.set_xlabel("Tempo (s)")
@@ -54,19 +54,12 @@ if uploaded_file:
                 media = filtered_data.mean()
                 normalized_data = (filtered_data - media) / media
 
-                st.subheader("Grafico Dati Normalizzati rispetto alla Media")
-                fig2, ax2 = plt.subplots()
-                ax2.plot(filtered_time, normalized_data, marker='o', linestyle='-', color='green')
-                ax2.set_xlabel("Tempo (s)")
-                ax2.set_ylabel("Valore Normalizzato")
-                ax2.grid(True)
-                st.pyplot(fig2)
-
             # Tabella filtrata
             st.subheader("Dati Filtrati")
             st.dataframe(pd.DataFrame({
                 "Tempo (s)": filtered_time,
-                "Corrente (mA)": filtered_data
+                "Corrente (mA)": filtered_data,
+                "Dati normalizzati (-)": normalized_data
             }))
 
             # Statistiche
