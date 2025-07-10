@@ -7,7 +7,7 @@ from io import BytesIO
 import tempfile
 import plotly.graph_objs as go
 
-st.title("Long term stability analysis (mA)")
+st.title("Long term stability analysis (μA)")
 
 # Caricamento file Excel
 uploaded_file = st.file_uploader("Carica file Excel", type=["xlsx", "xls"])
@@ -26,7 +26,7 @@ if uploaded_file:
         st.dataframe(df.head())
 
         columns = df.columns.tolist()
-        selected_column = st.selectbox("Seleziona la colonna delle misurazioni (mA)", columns)
+        selected_column = st.selectbox("Seleziona la colonna delle misurazioni (μA)", columns)
 
         if selected_column:
             data = df[selected_column].dropna().reset_index(drop=True)
@@ -36,8 +36,8 @@ if uploaded_file:
             st.sidebar.header("Filtri")
             min_val = float(data.min())
             max_val = float(data.max())
-            soglia_inf = st.sidebar.slider("Soglia inferiore (mA)", min_val, max_val, min_val)
-            soglia_sup = st.sidebar.slider("Soglia superiore (mA)", min_val, max_val, max_val)
+            soglia_inf = st.sidebar.number_input("Soglia inferiore (μA)", min_val, max_val, min_val)
+            soglia_sup = st.sidebar.number_input("Soglia superiore (μA)", min_val, max_val, max_val)
 
             # Filtraggio dati
             mask = (data >= soglia_inf) & (data <= soglia_sup)
@@ -54,7 +54,7 @@ if uploaded_file:
                           line=dict(color='blue')))
             fig1.update_layout(
                 xaxis_title="Tempo (s)",
-                yaxis_title="Corrente (mA)",
+                yaxis_title="Corrente (μA)",
                 hovermode="x unified"
             )
             st.plotly_chart(fig1, use_container_width=True)
@@ -84,7 +84,7 @@ if uploaded_file:
             st.subheader("Dati Filtrati")
             st.dataframe(pd.DataFrame({
                 "Tempo (s)": filtered_time,
-                "Corrente (mA)": filtered_data,
+                "Corrente (μA)": filtered_data,
                 "Dati normalizzati (-)": normalized_data
             }))
 
@@ -93,7 +93,7 @@ if uploaded_file:
             # ---- Esportazione in Excel ----
             export_df = pd.DataFrame({
                 "Tempo (s)": filtered_time,
-                "Corrente (mA)": filtered_data,
+                "Corrente (μA)": filtered_data,
                 "Dati normalizzati (-)": normalized_data
             })
             excel_buffer = BytesIO()
@@ -137,11 +137,11 @@ if uploaded_file:
                 st.subheader("Statistiche")
                 st.markdown(f"""
                 - **Numero istanti analizzati**: {istanti} ({100*istanti/len(data):.2f}%)
-                - **Minimo**: {minimo:.3f} mA  
-                - **Massimo**: {massimo:.3f} mA  
-                - **Media**: {media:.3f} mA  
-                - **Media normalizzata**: {media_norm:.3f} mA
-                - **Deviazione standard**: {std_dev:.3f} mA  
+                - **Minimo**: {minimo:.3f} μA  
+                - **Massimo**: {massimo:.3f} μA  
+                - **Media**: {media:.3f} μA  
+                - **Media normalizzata**: {media_norm:.3f} μA
+                - **Deviazione standard**: {std_dev:.3f} μA  
                 - **Flatness**: {flatness:.3f}
                 - **Totale secondi fuori soglia (% sul totale)**: {durata_fuori_soglia} s ({durata_fuori_soglia/len(data):.2f}%)
                 """)
@@ -179,7 +179,7 @@ if uploaded_file:
                 if not outliers.empty:
                     st.dataframe(pd.DataFrame({
                         "Tempo (s)": filtered_time[outlier_mask],
-                        "Outlier (mA)": outliers
+                        "Outlier (μA)": outliers
                     }))
 
                 # Punto 4: Durata fuori soglia (in secondi)
