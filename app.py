@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import io
 from io import BytesIO
 import tempfile
+import plotly.graph_objs as go
 
 st.title("Long term stability analysis (mA)")
 
@@ -45,6 +46,20 @@ if uploaded_file:
 
             # Plot originale
             st.subheader("Grafico delle misurazioni filtrate")
+
+            fig1 = go.Figure()
+            fig1.add_trace(go.Scatter(x=filtered_time, y=filtered_data,
+                          mode='lines+markers',
+                          name='Filtrato',
+                          line=dict(color='green')))
+            fig1.update_layout(
+                title="Grafico delle misurazioni filtrate",
+                xaxis_title="Tempo (s)",
+                yaxis_title="(-)",
+                hovermode="x unified"
+            )
+
+st.plotly_chart(fig2, use_container_width=True)
             fig1, ax1 = plt.subplots()
             ax1.plot(filtered_time, filtered_data, marker='o', linestyle='-')
             ax1.set_xlabel("Tempo (s)")
