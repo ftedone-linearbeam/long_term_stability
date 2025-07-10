@@ -36,8 +36,8 @@ if uploaded_file:
             st.sidebar.header("Filtri")
             min_val = float(data.min())
             max_val = float(data.max())
-            soglia_inf = st.sidebar.number_input("Soglia inferiore (>="+str({min_val:.2f})+"μA)", min_val, max_val, min_val)
-            soglia_sup = st.sidebar.number_input("Soglia superiore (<="+str(min_val)+"μA)", min_val, max_val, max_val)
+            soglia_inf = st.sidebar.number_input("Soglia inferiore (>="+f"{min_val:.2f}"+"μA)", min_val, max_val, min_val)
+            soglia_sup = st.sidebar.number_input("Soglia superiore (<="+f"{min_val:.2f}"+"μA)", min_val, max_val, max_val)
 
             # Filtraggio dati
             mask = (data >= soglia_inf) & (data <= soglia_sup)
