@@ -98,7 +98,7 @@ if uploaded_file:
                     y_min = st.number_input("Limite minimo asse Y", value=float(filtered_data.min()),key="2")
                 with col2:
                     x_max = st.number_input("Limite massimo asse X", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()),key="3")
-                    y_max = st.number_input("Limite massimo asse Y", value=float(filtered_data.max()).key="4")
+                    y_max = st.number_input("Limite massimo asse Y", value=float(filtered_data.max()),key="4")
                 fig1.update_xaxes(range=[x_min, x_max])
                 fig1.update_yaxes(range=[y_min, y_max])
                 st.plotly_chart(fig1, use_container_width=True)
