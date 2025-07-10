@@ -94,7 +94,7 @@ if uploaded_file:
 
             if is_normalized:
                 st.subheader("Grafico delle misurazioni filtrate")
-                fig1 = plot_interactive(filtered_time, filtered_data, "Tempo (s)", "Corrente (μA)", color='blue')
+                fig1 = plot_interactive(filtered_time, filtered_data, "Tempo (s)", "Valori normalizzati (-)", color='blue')
                 col1, col2 = st.columns(2)
                 with col1:
                     x_min = st.number_input("Limite minimo asse X", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()),key="1")
@@ -110,7 +110,7 @@ if uploaded_file:
                 normalized_data = filtered_data / filtered_data.mean()
                 filtered_time = time[mask]
                 st.subheader("Grafico delle misurazioni filtrate e normalizzate")
-                fig1 = plot_interactive(filtered_time, current_data, "Tempo (s)", "Valori normalizzati (-)", color='blue')
+                fig1 = plot_interactive(filtered_time, current_data, "Tempo (s)", "Corrente (μA)", color='blue')
                 col1, col2 = st.columns(2)
                 with col1:
                     x_min = st.number_input("Limite minimo asse X", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()),key="5")
