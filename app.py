@@ -2,6 +2,9 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import io
+from io import BytesIO
+import tempfile
 
 st.title("Long term stability analysis (mA)")
 
@@ -72,6 +75,41 @@ if uploaded_file:
                 "Dati normalizzati (-)": normalized_data
             }))
 
+            # ---- Esportazione in Excel ----
+            st.subheader("Download dei dati normalizzati")
+
+            export_df = pd.DataFrame({
+                "Tempo (s)": filtered_time,
+                "Corrente (mA)": filtered_data,
+                "Dati normalizzati (-)": normalized_data
+            })
+
+            excel_buffer = BytesIO()
+            with pd.ExcelWriter(excel_buffer, engine='xlsxwriter') as writer:
+                export_df.to_excel(writer, index=False, sheet_name="Normalizzati")
+
+            st.download_button(
+                label="Scarica dati normalizzati in Excel",
+                data=excel_buffer.getvalue(),
+                file_name="dati_normalizzati.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+
+            # ---- Esportazione grafico come immagine PNG ----
+            st.subheader("Download del grafico normalizzato")
+
+            img_buffer = BytesIO()
+            fig2.savefig(img_buffer, format="png", bbox_inches="tight")
+            img_buffer.seek(0)
+
+            st.download_button(
+                label="Scarica grafico normalizzato (PNG)",
+                data=img_buffer,
+                file_name="grafico_normalizzato.png",
+                mime="image/png"
+            )
+
+            
             # Statistiche
             if not filtered_data.empty:
                 istanti=len(filtered_data)
