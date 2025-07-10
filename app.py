@@ -52,7 +52,7 @@ if uploaded_file:
             # Normalizzazione rispetto alla media
             if not filtered_data.empty:
                 media = filtered_data.mean()
-                normalized_data = (filtered_data - media) / media
+                normalized_data = filtered_data / media
                 media_norm=normalized_data.mean()
 
             # Tabella filtrata
