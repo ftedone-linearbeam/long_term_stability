@@ -134,8 +134,8 @@ if uploaded_file:
                 fuori_soglia_mask = (data < soglia_inf) | (data > soglia_sup)
                 durata_fuori_soglia = fuori_soglia_mask.sum()
 
-                st.subheader("Statistiche")
-                st.markdown(f"""
+                st.sidebar.subheader("Statistiche")
+                st.sidebar.markdown(f"""
                 - **Numero istanti analizzati**: {istanti} ({100*istanti/len(data):.2f}%)
                 - **Minimo**: {minimo:.3f} μA  
                 - **Massimo**: {massimo:.3f} μA  
