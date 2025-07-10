@@ -28,7 +28,7 @@ if uploaded_file:
         columns = df.columns.tolist()
         selected_column = st.selectbox("Seleziona la colonna delle misurazioni (μA)", columns)
 
-        if selected_column:
+        if selected_column and not data.empty:
             data = df[selected_column].dropna().reset_index(drop=True)
             time = np.arange(len(data))
 
@@ -37,7 +37,7 @@ if uploaded_file:
             min_val = float(data.min())
             max_val = float(data.max())
             soglia_inf = st.sidebar.number_input("Soglia inferiore (>="+str(min_val)+"μA)", min_val, max_val, min_val)
-            soglia_sup = st.sidebar.number_input("Soglia superiore (μA)", min_val, max_val, max_val)
+            soglia_sup = st.sidebar.number_input("Soglia superiore (<="+str(min_val)+"μA)", min_val, max_val, max_val)
 
             # Filtraggio dati
             mask = (data >= soglia_inf) & (data <= soglia_sup)
