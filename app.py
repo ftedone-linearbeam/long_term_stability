@@ -2,265 +2,143 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import io
-from io import BytesIO
-import tempfile
 import plotly.graph_objs as go
+from io import BytesIO
 
-if "nomalized_estimation" not in st.session_state:
-    st.session_state["nomalized_estimation"] = False
+# ------------------- Utility Functions -------------------
+def read_excel_file(file, has_header):
+    header = 0 if has_header else None
+    df = pd.read_excel(file, engine="openpyxl", header=header)
+    if not has_header:
+        df.columns = [f"Colonna {i+1}" for i in range(df.shape[1])]
+    return df
 
+def plot_interactive(x, y, x_label, y_label, color='blue', name='Dati'):
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=x, y=y, mode='lines+markers', name=name, line=dict(color=color)))
+    fig.update_layout(xaxis_title=x_label, yaxis_title=y_label, hovermode="x unified")
+    return fig
+
+def export_to_excel(df):
+    buffer = BytesIO()
+    with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
+        df.to_excel(writer, index=False, sheet_name="Normalizzati")
+    return buffer.getvalue()
+
+def export_plot_as_png(x, y, x_label, y_label):
+    buffer = BytesIO()
+    fig, ax = plt.subplots()
+    ax.plot(x, y, marker='o', linestyle='-', color='green')
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
+    ax.grid(True)
+    fig.savefig(buffer, format="png", bbox_inches="tight")
+    buffer.seek(0)
+    return buffer
+
+def calculate_statistics(data, original_data, soglia_inf, soglia_sup):
+    stats = {}
+    stats['count'] = len(data)
+    stats['min'] = data.min()
+    stats['max'] = data.max()
+    stats['mean'] = data.mean()
+    stats['std'] = data.std()
+    stats['flatness'] = ((stats['max'] / stats['min'] - 1) / 2) if stats['min'] != 0 else np.nan
+    fuori_soglia = ((original_data < soglia_inf) | (original_data > soglia_sup)).sum()
+    stats['fuori_soglia'] = fuori_soglia
+    stats['percentuale'] = 100 * stats['count'] / len(original_data)
+    return stats
+
+# ------------------- Main App -------------------
 st.title("Long term stability analysis (μA)")
 
-# Caricamento file Excel
+if "normalized_estimation" not in st.session_state:
+    st.session_state["normalized_estimation"] = False
+
 uploaded_file = st.file_uploader("Carica file Excel", type=["xlsx", "xls"])
+
 if uploaded_file:
     st.sidebar.subheader("Opzioni file")
     has_header = st.sidebar.checkbox("Il file ha intestazione?", value=False)
-    try:
-        if has_header:
-            df = pd.read_excel(uploaded_file, engine="openpyxl", header=0)
-        else:
-            df = pd.read_excel(uploaded_file, engine="openpyxl", header=None)
-            df.columns = [f"Colonna {i+1}" for i in range(df.shape[1])]
 
+    try:
+        df = read_excel_file(uploaded_file, has_header)
         st.subheader("Anteprima del file")
         st.dataframe(df.head())
 
         columns = df.columns.tolist()
         selected_column = st.selectbox("Seleziona la colonna delle misurazioni (μA)", columns)
-
         data = df[selected_column].dropna().reset_index(drop=True)
-        if selected_column and not data.empty:
+
+        if not data.empty:
             time = np.arange(len(data))
-            # Sidebar filtri
+            min_val, max_val = float(data.min()), float(data.max())
+
             st.sidebar.header("Filtri")
-            min_val = float(data.min())
-            max_val = float(data.max())
+            if abs(data.mean() - 1) < 0.2:
+                st.session_state["normalized_estimation"] = True
 
-            if abs(data.mean()-1)<0.2:
-                st.session_state["nomalized_estimation"]=True
-            else:
-                st.session_state["nomalized_estimation"]=False
-                
-            is_normalized=st.sidebar.checkbox("I dati sono già normalizzati?", value=st.session_state["nomalized_estimation"])
+            is_normalized = st.sidebar.checkbox("I dati sono già normalizzati?", value=st.session_state["normalized_estimation"])
 
-            if is_normalized:
-                soglia_inf = st.sidebar.number_input("Soglia inferiore (>="+f"{min_val:.2f}"+")", min_val, max_val, min_val)
-                soglia_sup = st.sidebar.number_input("Soglia superiore (<="+f"{max_val:.2f}"+")", min_val, max_val, max_val)
-            else:
-                soglia_inf = st.sidebar.number_input("Soglia inferiore (>="+f"{min_val:.2f}"+"μA)", min_val, max_val, min_val)
-                soglia_sup = st.sidebar.number_input("Soglia superiore (<="+f"{max_val:.2f}"+"μA)", min_val, max_val, max_val)
-            
-            # Filtraggio dati
+            soglia_inf = st.sidebar.number_input("Soglia inferiore", min_val, max_val, min_val)
+            soglia_sup = st.sidebar.number_input("Soglia superiore", min_val, max_val, max_val)
+
             mask = (data >= soglia_inf) & (data <= soglia_sup)
             filtered_data = data[mask]
-            media = filtered_data.mean()
             filtered_time = time[mask]
 
-            # Normalizzazione rispetto alla media
             if not is_normalized:
-                # Plot originale
                 st.subheader("Grafico delle misurazioni filtrate")
-
-                fig1 = go.Figure()
-                fig1.add_trace(go.Scatter(x=filtered_time, y=filtered_data,
-                              mode='lines+markers',
-                              name='Filtrato',
-                              line=dict(color='blue')))
-                fig1.update_layout(
-                    xaxis_title="Tempo (s)",
-                    yaxis_title="Corrente (μA)",
-                    hovermode="x unified"
-                )
+                fig1 = plot_interactive(filtered_time, filtered_data, "Tempo (s)", "Corrente (μA)", color='blue')
                 st.plotly_chart(fig1, use_container_width=True)
-                with Col1:
-                    # Assi X (tempo)
-                    x_min = st.number_input("Limite minimo asse X (secondi)", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()))
-                    x_max = st.number_input("Limite massimo asse X (secondi)", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()))
-                with Col2:
-                    # Assi Y (corrente, in μA o unità che usi)
-                    y_min = st.number_input("Limite minimo asse Y", value=float(filtered_data.min()))
-                    y_max = st.number_input("Limite massimo asse Y", value=float(filtered_data.max()))
-
-                fig1.update_xaxes(range=[x_min, x_max])
-                fig1.update_yaxes(range=[y_min, y_max])
-
-                normalized_data = filtered_data / media
-                media_norm=normalized_data.mean()
-
-                # Plot normalizzato
-                st.subheader("Grafico delle misurazioni filtrate e normalizzate")
-    
-                fig2 = go.Figure()
-                fig2.add_trace(go.Scatter(x=filtered_time, y=normalized_data,
-                              mode='lines+markers',
-                              name='Filtrato',
-                              line=dict(color='green')))
-                fig2.update_layout(
-                    xaxis_title="Tempo (s)",
-                    yaxis_title="(-)",
-                    hovermode="x unified"
-                )
-                st.plotly_chart(fig2, use_container_width=True)
-                with Col1:
-                    # Assi X (tempo)
-                    x_min = st.number_input("Limite minimo asse X (secondi)", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()))
-                    x_max = st.number_input("Limite massimo asse X (secondi)", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()))
-                with Col2:
-                    # Assi Y (corrente, in μA o unità che usi)
-                    y_min = st.number_input("Limite minimo asse Y", value=float(normalized_data.min()))
-                    y_max = st.number_input("Limite massimo asse Y", value=float(normalized_data.max()))
-
-                fig2.update_xaxes(range=[x_min, x_max])
-                fig2.update_yaxes(range=[y_min, y_max])
-
-
-                # Tabella filtrata
-                st.subheader("Dati Filtrati")
-                st.dataframe(pd.DataFrame({
-                    "Tempo (s)": filtered_time,
-                    "Corrente (μA)": filtered_data,
-                    "Dati normalizzati (-)": normalized_data
-                }))
-
-                st.subheader("Download")
-
-                # ---- Esportazione in Excel ----
-                export_df = pd.DataFrame({
-                    "Tempo (s)": filtered_time,
-                    "Corrente (μA)": filtered_data,
-                    "Dati normalizzati (-)": normalized_data
-                })
-                excel_buffer = BytesIO()
-                with pd.ExcelWriter(excel_buffer, engine='xlsxwriter') as writer:
-                    export_df.to_excel(writer, index=False, sheet_name="Normalizzati")
-
-                st.download_button(
-                    label="Scarica dati normalizzati in Excel",
-                    data=excel_buffer.getvalue(),
-                    file_name="dati_normalizzati.xlsx",
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                )
-
-                # ---- Esportazione grafico come immagine PNG ----
-                img_buffer = BytesIO()
-                fig3, ax3 = plt.subplots()
-                ax3.plot(filtered_time, normalized_data, marker='o', linestyle='-', color='green')
-                ax3.set_xlabel("Tempo (s)")
-                ax3.set_ylabel("Valori normalizzati (-)")
-                ax3.grid(True)
-                fig3.savefig(img_buffer, format="png", bbox_inches="tight")
-                img_buffer.seek(0)
-
-                st.download_button(
-                    label="Scarica grafico normalizzato (PNG)",
-                    data=img_buffer,
-                    file_name="grafico_normalizzato.png",
-                    mime="image/png"
-                )
-
+                normalized_data = filtered_data / filtered_data.mean()
             else:
-                media_norm=media
-                # Plot originale ma normalizzato già
-                st.subheader("Grafico delle misurazioni filtrate e normalizzate")
+                normalized_data = filtered_data
 
-                fig1 = go.Figure()
-                fig1.add_trace(go.Scatter(x=filtered_time, y=filtered_data,
-                              mode='lines+markers',
-                              name='Filtrato',
-                              line=dict(color='blue')))
-                fig1.update_layout(
-                    xaxis_title="Tempo (s)",
-                    yaxis_title="Valori normalizzati (-)",
-                    hovermode="x unified"
-                )
-                st.plotly_chart(fig1, use_container_width=True)
-                [Col1,Col2]=st.columns(2)
-                with Col1:
-                    # Assi X (tempo)
-                    x_min = st.number_input("Limite minimo asse X (secondi)", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()))
-                    x_max = st.number_input("Limite massimo asse X (secondi)", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()))
-                with Col2:
-                    # Assi Y (corrente, in μA o unità che usi)
-                    y_min = st.number_input("Limite minimo asse Y", value=float(filtered_data.min()))
-                    y_max = st.number_input("Limite massimo asse Y", value=float(filtered_data.max()))
+            st.subheader("Grafico delle misurazioni normalizzate")
+            fig2 = plot_interactive(filtered_time, normalized_data, "Tempo (s)", "(-)", color='green')
+            st.plotly_chart(fig2, use_container_width=True)
 
-                fig1.update_xaxes(range=[x_min, x_max])
-                fig1.update_yaxes(range=[y_min, y_max])
-                
-                # Tabella filtrata
-                st.subheader("Dati Filtrati")
-                st.dataframe(pd.DataFrame({
-                    "Tempo (s)": filtered_time,
-                    "Dati normalizzati (-)": filtered_data
-                }))
-                st.subheader("Download")
-                
-                # ---- Esportazione in Excel ----
-                export_df = pd.DataFrame({
-                    "Tempo (s)": filtered_time,
-                    "Corrente (-)": filtered_data
-                })
-                excel_buffer = BytesIO()
-                with pd.ExcelWriter(excel_buffer, engine='xlsxwriter') as writer:
-                    export_df.to_excel(writer, index=False, sheet_name="Normalizzati")
+            result_df = pd.DataFrame({
+                "Tempo (s)": filtered_time,
+                "Dati normalizzati (-)": normalized_data
+            })
+            if not is_normalized:
+                result_df.insert(1, "Corrente (μA)", filtered_data)
 
-                st.download_button(
-                    label="Scarica dati normalizzati in Excel",
-                    data=excel_buffer.getvalue(),
-                    file_name="dati_normalizzati.xlsx",
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                )
+            st.subheader("Dati Filtrati")
+            st.dataframe(result_df)
 
-                # ---- Esportazione grafico come immagine PNG ----
-                img_buffer = BytesIO()
-                fig3, ax3 = plt.subplots()
-                ax3.plot(filtered_time, filtered_data, marker='o', linestyle='-', color='green')
-                ax3.set_xlabel("Tempo (s)")
-                ax3.set_ylabel("(-)")
-                ax3.grid(True)
-                fig3.savefig(img_buffer, format="png", bbox_inches="tight")
-                img_buffer.seek(0)
+            st.subheader("Download")
+            st.download_button("Scarica dati normalizzati in Excel", data=export_to_excel(result_df),
+                               file_name="dati_normalizzati.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
-                st.download_button(
-                    label="Scarica grafico normalizzato (PNG)",
-                    data=img_buffer,
-                    file_name="grafico_normalizzato.png",
-                    mime="image/png"
-                )
-            
-            # Statistiche
+            st.download_button("Scarica grafico normalizzato (PNG)",
+                               data=export_plot_as_png(filtered_time, normalized_data, "Tempo (s)", "(-)"),
+                               file_name="grafico_normalizzato.png", mime="image/png")
+
             if not filtered_data.empty:
-                istanti=len(filtered_data)
-                minimo = filtered_data.min()
-                massimo = filtered_data.max()
-                std_dev = filtered_data.std()
-                flatness = ((massimo / minimo - 1) / 2) if minimo != 0 else np.nan
-                fuori_soglia_mask = (data < soglia_inf) | (data > soglia_sup)
-                durata_fuori_soglia = fuori_soglia_mask.sum()
-
+                stats = calculate_statistics(filtered_data, data, soglia_inf, soglia_sup)
                 st.sidebar.subheader("Statistiche")
                 st.sidebar.markdown(f"""
-                - **Numero istanti analizzati**: {istanti} ({100*istanti/len(data):.2f}%)
-                - **Minimo**: {minimo:.3f} μA  
-                - **Massimo**: {massimo:.3f} μA  
-                - **Media**: {media:.3f} μA  
-                - **Media normalizzata**: {media_norm:.3f} μA
-                - **Deviazione standard**: {std_dev:.3f} μA  
-                - **Flatness**: {flatness:.3f}
-                - **Totale secondi fuori soglia (% sul totale)**: {durata_fuori_soglia} s ({durata_fuori_soglia/len(data):.2f}%)
+                - **Numero istanti analizzati**: {stats['count']} ({stats['percentuale']:.2f}%)
+                - **Minimo**: {stats['min']:.3f} μA
+                - **Massimo**: {stats['max']:.3f} μA
+                - **Media**: {stats['mean']:.3f} μA
+                - **Deviazione standard**: {stats['std']:.3f} μA
+                - **Flatness**: {stats['flatness']:.3f}
+                - **Totale secondi fuori soglia**: {stats['fuori_soglia']} ({stats['fuori_soglia']/len(data):.2%})
                 """)
 
-                # Punto 1: Istogramma distribuzione
+                # Distribuzione valori
                 st.subheader("Distribuzione dei valori")
                 fig3, ax3 = plt.subplots()
                 ax3.hist(filtered_data, bins=30, color='skyblue', edgecolor='black')
-                ax3.set_xlabel("Corrente (mA)")
+                ax3.set_xlabel("Corrente (μA)")
                 ax3.set_ylabel("Frequenza")
                 st.pyplot(fig3)
 
-                # Punto 2: Trend line (media mobile)
+                # Media mobile
                 st.subheader("Trend line (media mobile)")
                 window_size = st.sidebar.slider("Finestra media mobile", 1, 500, 5)
                 rolling_mean = filtered_data.rolling(window=window_size).mean()
@@ -270,28 +148,22 @@ if uploaded_file:
                 ax4.plot(filtered_time, rolling_mean, label=f"Media mobile ({window_size})", color='red')
                 ax4.plot(filtered_time, ewma, label=f"Media esponenziale (span={window_size})", color='green')
                 ax4.set_xlabel("Tempo (s)")
-                ax4.set_ylabel("Corrente (mA)")
+                ax4.set_ylabel("Corrente (μA)")
                 ax4.legend()
                 ax4.grid(True)
                 st.pyplot(fig4)
 
-                # Punto 3: Evidenziazione outlier (> 3σ)
+                # Outlier
                 st.subheader("Outlier (oltre 3 deviazioni standard)")
-                upper_outlier = media + 3 * std_dev
-                lower_outlier = media - 3 * std_dev
-                outlier_mask = (filtered_data > upper_outlier) | (filtered_data < lower_outlier)
-                outliers = filtered_data[outlier_mask]
+                upper_outlier = stats['mean'] + 3 * stats['std']
+                lower_outlier = stats['mean'] - 3 * stats['std']
+                outliers = filtered_data[(filtered_data > upper_outlier) | (filtered_data < lower_outlier)]
                 st.write(f"**Numero di outlier (> ±3σ): {len(outliers)}**")
                 if not outliers.empty:
                     st.dataframe(pd.DataFrame({
-                        "Tempo (s)": filtered_time[outlier_mask],
+                        "Tempo (s)": filtered_time[outliers.index],
                         "Outlier (μA)": outliers
                     }))
-
-                # Punto 4: Durata fuori soglia (in secondi)
-
-            else:
-                st.warning("Nessun dato nei limiti specificati.")
 
     except Exception as e:
         st.error(f"Errore nella lettura del file: {e}")
