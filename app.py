@@ -80,7 +80,7 @@ if uploaded_file:
                 norm_data=data/data.mean()
             
             time = np.arange(len(data))
-            min_val, max_val = float(data.min()), float(data.max())
+            min_val, max_val = float(norm_data.min()), float(norm_data.max())
             
             is_normalized = st.sidebar.checkbox("I dati sono già normalizzati", value=st.session_state["normalized_estimation"],key="checkbox_normalized")
             
