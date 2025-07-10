@@ -51,21 +51,13 @@ if uploaded_file:
             fig1.add_trace(go.Scatter(x=filtered_time, y=filtered_data,
                           mode='lines+markers',
                           name='Filtrato',
-                          line=dict(color='green')))
+                          line=dict(color='blue')))
             fig1.update_layout(
                 xaxis_title="Tempo (s)",
-                yaxis_title="(-)",
+                yaxis_title="Corrente (mA)",
                 hovermode="x unified"
             )
-
             st.plotly_chart(fig1, use_container_width=True)
-            
-            fig1, ax1 = plt.subplots()
-            ax1.plot(filtered_time, filtered_data, marker='o', linestyle='-')
-            ax1.set_xlabel("Tempo (s)")
-            ax1.set_ylabel("Corrente (mA)")
-            ax1.grid(True)
-            st.pyplot(fig1)
 
             # Normalizzazione rispetto alla media
             if not filtered_data.empty:
@@ -75,12 +67,18 @@ if uploaded_file:
 
             # Plot normalizzato
             st.subheader("Grafico delle misurazioni normalizzate")
-            fig2, ax2 = plt.subplots()
-            ax2.plot(filtered_time, normalized_data, marker='o', linestyle='-', color='green')
-            ax2.set_xlabel("Tempo (s)")
-            ax2.set_ylabel("(-)")
-            ax2.grid(True)
-            st.pyplot(fig2)
+
+            fig2 = go.Figure()
+            fig2.add_trace(go.Scatter(x=filtered_time, y=normalized_data,
+                          mode='lines+markers',
+                          name='Filtrato',
+                          line=dict(color='green')))
+            fig2.update_layout(
+                xaxis_title="Tempo (s)",
+                yaxis_title="(-)",
+                hovermode="x unified"
+            )
+            st.plotly_chart(fig2, use_container_width=True)
             
             # Tabella filtrata
             st.subheader("Dati Filtrati")
@@ -90,15 +88,14 @@ if uploaded_file:
                 "Dati normalizzati (-)": normalized_data
             }))
 
-            # ---- Esportazione in Excel ----
-            st.subheader("Download dei dati normalizzati")
+            st.subheader("Download")
 
+            # ---- Esportazione in Excel ----
             export_df = pd.DataFrame({
                 "Tempo (s)": filtered_time,
                 "Corrente (mA)": filtered_data,
                 "Dati normalizzati (-)": normalized_data
             })
-
             excel_buffer = BytesIO()
             with pd.ExcelWriter(excel_buffer, engine='xlsxwriter') as writer:
                 export_df.to_excel(writer, index=False, sheet_name="Normalizzati")
@@ -111,8 +108,6 @@ if uploaded_file:
             )
 
             # ---- Esportazione grafico come immagine PNG ----
-            st.subheader("Download del grafico normalizzato")
-
             img_buffer = BytesIO()
             fig2.savefig(img_buffer, format="png", bbox_inches="tight")
             img_buffer.seek(0)
@@ -123,7 +118,6 @@ if uploaded_file:
                 file_name="grafico_normalizzato.png",
                 mime="image/png"
             )
-
             
             # Statistiche
             if not filtered_data.empty:
