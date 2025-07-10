@@ -82,7 +82,7 @@ if uploaded_file:
                 - **Media normalizzata**: {media_norm:.3f} mA
                 - **Deviazione standard**: {std_dev:.3f} mA  
                 - **Flatness**: {flatness:.3f}
-                - **Totale secondi fuori soglia (% sul totale)**: {durata_fuori_soglia} s ({}%)
+                - **Totale secondi fuori soglia (% sul totale)**: {durata_fuori_soglia} s (%)
                 """)
 
                 # Punto 1: Istogramma distribuzione
