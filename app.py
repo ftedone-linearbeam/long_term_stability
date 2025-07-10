@@ -65,7 +65,7 @@ if uploaded_file:
 
             # Statistiche
             if not filtered_data.empty:
-                istanti=filtered_data.length()
+                istanti=len(filtered_data)
                 minimo = filtered_data.min()
                 massimo = filtered_data.max()
                 std_dev = filtered_data.std()
