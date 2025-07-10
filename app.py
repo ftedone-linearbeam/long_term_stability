@@ -90,6 +90,7 @@ if uploaded_file:
             mask = (norm_data >= soglia_inf) & (norm_data <= soglia_sup)
             filtered_data = norm_data[mask]
             filtered_time = time[mask]
+            current_data=data[mask]
 
             if is_normalized:
                 st.subheader("Grafico delle misurazioni filtrate")
@@ -109,14 +110,14 @@ if uploaded_file:
                 normalized_data = filtered_data / filtered_data.mean()
                 filtered_time = time[mask]
                 st.subheader("Grafico delle misurazioni filtrate e normalizzate")
-                fig1 = plot_interactive(filtered_time, normalized_data, "Tempo (s)", "Valori normalizzati (-)", color='blue')
+                fig1 = plot_interactive(filtered_time, current_data, "Tempo (s)", "Valori normalizzati (-)", color='blue')
                 col1, col2 = st.columns(2)
                 with col1:
                     x_min = st.number_input("Limite minimo asse X", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()),key="5")
-                    y_min = st.number_input("Limite minimo asse Y", value=float(normalized_data.min()),key="6")
+                    y_min = st.number_input("Limite minimo asse Y", value=float(current_data.min()),key="6")
                 with col2:
                     x_max = st.number_input("Limite massimo asse X", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()),key="7")
-                    y_max = st.number_input("Limite massimo asse Y", value=float(normalized_data.max()),key="8")
+                    y_max = st.number_input("Limite massimo asse Y", value=float(current_data.max()),key="8")
                 fig1.update_xaxes(range=[x_min, x_max])
                 fig1.update_yaxes(range=[y_min, y_max])
                 st.plotly_chart(fig1, use_container_width=True)
@@ -155,7 +156,7 @@ if uploaded_file:
                                file_name="grafico_normalizzato.png", mime="image/png")
 
             if not filtered_data.empty:
-                stats = calculate_statistics(filtered_data, data, soglia_inf, soglia_sup)
+                stats = calculate_statistics(current_data, data, soglia_inf, soglia_sup)
                 st.sidebar.subheader("Statistiche")
                 st.sidebar.markdown(f"""
                 - **Numero istanti analizzati**: {stats['count']} ({stats['percentuale']:.2f}%)
@@ -171,7 +172,7 @@ if uploaded_file:
                 # Distribuzione valori
                 st.subheader("Distribuzione dei valori")
                 fig3, ax3 = plt.subplots()
-                ax3.hist(filtered_data, bins=30, color='skyblue', edgecolor='black')
+                ax3.hist(current_data, bins=30, color='skyblue', edgecolor='black')
                 ax3.set_xlabel("Corrente (μA)")
                 ax3.set_ylabel("Frequenza")
                 st.pyplot(fig3)
@@ -195,7 +196,7 @@ if uploaded_file:
                 st.subheader("Outlier (oltre 3 deviazioni standard)")
                 upper_outlier = stats['mean'] + 3 * stats['std']
                 lower_outlier = stats['mean'] - 3 * stats['std']
-                outliers = filtered_data[(filtered_data > upper_outlier) | (filtered_data < lower_outlier)]
+                outliers = current_data[(current_data > upper_outlier) | (current_data < lower_outlier)]
                 st.write(f"**Numero di outlier (> ±3σ): {len(outliers)}**")
                 if not outliers.empty:
                     st.dataframe(pd.DataFrame({
