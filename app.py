@@ -58,9 +58,9 @@ if uploaded_file:
             # Plot normalizzato
             st.subheader("Grafico delle misurazioni normalizzate")
             fig2, ax2 = plt.subplots()
-            ax2.plot(filtered_time, 100*normalized_data, marker='o', linestyle='-')
+            ax2.plot(filtered_time, normalized_data, marker='o', linestyle='-', color='green')
             ax2.set_xlabel("Tempo (s)")
-            ax2.set_ylabel("Percentuale (%)")
+            ax2.set_ylabel("(-)")
             ax2.grid(True)
             st.pyplot(fig2)
             
