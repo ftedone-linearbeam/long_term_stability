@@ -77,7 +77,9 @@ if uploaded_file:
             st.sidebar.header("Filtri")
             if abs(data.mean() - 1) < 0.2:
                 st.session_state["normalized_estimation"] = True
-
+            else:
+                st.session_state["normalized_estimation"] = False
+            
             is_normalized = st.sidebar.checkbox("I dati sono già normalizzati", value=st.session_state["normalized_estimation"],key="checkbox_normalized")
 
             soglia_inf = st.sidebar.number_input("Soglia inferiore", min_val, max_val, min_val)
