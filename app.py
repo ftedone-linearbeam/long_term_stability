@@ -75,14 +75,14 @@ if uploaded_file:
 
                 st.subheader("Statistiche")
                 st.markdown(f"""
-                - **Numero istanti analizzati**: {istanti}
+                - **Numero istanti analizzati**: {istanti} ({100*istanti/len(data):.2f}%)
                 - **Minimo**: {minimo:.3f} mA  
                 - **Massimo**: {massimo:.3f} mA  
                 - **Media**: {media:.3f} mA  
                 - **Media normalizzata**: {media_norm:.3f} mA
                 - **Deviazione standard**: {std_dev:.3f} mA  
                 - **Flatness**: {flatness:.3f}
-                - **Totale secondi fuori soglia (% sul totale)**: {durata_fuori_soglia} s (%)
+                - **Totale secondi fuori soglia (% sul totale)**: {durata_fuori_soglia} s ({durata_fuori_soglia/len(data):.2f}%)
                 """)
 
                 # Punto 1: Istogramma distribuzione
