@@ -3,3 +3,6 @@ pandas
 openpyxl
 numpy
 matplotlib
+io
+tempfile
+plotly.graph_objs
