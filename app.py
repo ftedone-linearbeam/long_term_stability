@@ -47,34 +47,34 @@ if uploaded_file:
 
             if is_normalized:
                 soglia_inf = st.sidebar.number_input("Soglia inferiore (>="+f"{min_val:.2f}"+")", min_val, max_val, min_val)
-                soglia_sup = st.sidebar.number_input("Soglia superiore (<="+f"{min_val:.2f}"+")", min_val, max_val, max_val)
+                soglia_sup = st.sidebar.number_input("Soglia superiore (<="+f"{max_val:.2f}"+")", min_val, max_val, max_val)
             else:
                 soglia_inf = st.sidebar.number_input("Soglia inferiore (>="+f"{min_val:.2f}"+"μA)", min_val, max_val, min_val)
-                soglia_sup = st.sidebar.number_input("Soglia superiore (<="+f"{min_val:.2f}"+"μA)", min_val, max_val, max_val)
+                soglia_sup = st.sidebar.number_input("Soglia superiore (<="+f"{max_val:.2f}"+"μA)", min_val, max_val, max_val)
             
             # Filtraggio dati
             mask = (data >= soglia_inf) & (data <= soglia_sup)
             filtered_data = data[mask]
+            media = filtered_data.mean()
             filtered_time = time[mask]
 
-            # Plot originale
-            st.subheader("Grafico delle misurazioni filtrate")
-
-            fig1 = go.Figure()
-            fig1.add_trace(go.Scatter(x=filtered_time, y=filtered_data,
-                          mode='lines+markers',
-                          name='Filtrato',
-                          line=dict(color='blue')))
-            fig1.update_layout(
-                xaxis_title="Tempo (s)",
-                yaxis_title="Corrente (μA)",
-                hovermode="x unified"
-            )
-            st.plotly_chart(fig1, use_container_width=True)
-
             # Normalizzazione rispetto alla media
-            if not filtered_data.empty and not is_normalized:
-                media = filtered_data.mean()
+                if not is_normalized:
+                # Plot originale
+                st.subheader("Grafico delle misurazioni filtrate")
+
+                fig1 = go.Figure()
+                fig1.add_trace(go.Scatter(x=filtered_time, y=filtered_data,
+                              mode='lines+markers',
+                              name='Filtrato',
+                              line=dict(color='blue')))
+                fig1.update_layout(
+                    xaxis_title="Tempo (s)",
+                    yaxis_title="Corrente (μA)",
+                    hovermode="x unified"
+                )
+                st.plotly_chart(fig1, use_container_width=True)
+    
                 normalized_data = filtered_data / media
                 media_norm=normalized_data.mean()
 
@@ -124,6 +124,40 @@ if uploaded_file:
                 img_buffer = BytesIO()
                 fig3, ax3 = plt.subplots()
                 ax3.plot(filtered_time, normalized_data, marker='o', linestyle='-', color='green')
+                ax3.set_xlabel("Tempo (s)")
+                ax3.set_ylabel("(-)")
+                ax3.grid(True)
+                fig3.savefig(img_buffer, format="png", bbox_inches="tight")
+                img_buffer.seek(0)
+
+                st.download_button(
+                    label="Scarica grafico normalizzato (PNG)",
+                    data=img_buffer,
+                    file_name="grafico_normalizzato.png",
+                    mime="image/png"
+                )
+
+            else:
+                media_norm=media
+                # Plot originale ma normalizzato già
+                st.subheader("Grafico delle misurazioni filtrate e normalizzate")
+
+                fig1 = go.Figure()
+                fig1.add_trace(go.Scatter(x=filtered_time, y=filtered_data,
+                              mode='lines+markers',
+                              name='Filtrato',
+                              line=dict(color='blue')))
+                fig1.update_layout(
+                    xaxis_title="Tempo (s)",
+                    yaxis_title="Corrente (-)",
+                    hovermode="x unified"
+                )
+                st.plotly_chart(fig1, use_container_width=True)
+                
+                # ---- Esportazione grafico come immagine PNG ----
+                img_buffer = BytesIO()
+                fig3, ax3 = plt.subplots()
+                ax3.plot(filtered_time, filtered_data, marker='o', linestyle='-', color='green')
                 ax3.set_xlabel("Tempo (s)")
                 ax3.set_ylabel("(-)")
                 ax3.grid(True)
