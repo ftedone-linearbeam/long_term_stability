@@ -75,12 +75,12 @@ if uploaded_file:
                 )
                 st.plotly_chart(fig1, use_container_width=True)
                 # Assi X (tempo)
-                x_min = st.sidebar.number_input("Limite minimo asse X (secondi)", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()))
-                x_max = st.sidebar.number_input("Limite massimo asse X (secondi)", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()))
+                x_min = st.number_input("Limite minimo asse X (secondi)", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()))
+                x_max = st.number_input("Limite massimo asse X (secondi)", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()))
                 
                 # Assi Y (corrente, in μA o unità che usi)
-                y_min = st.sidebar.number_input("Limite minimo asse Y", value=float(filtered_data.min()))
-                y_max = st.sidebar.number_input("Limite massimo asse Y", value=float(filtered_data.max()))
+                y_min = st.number_input("Limite minimo asse Y", value=float(filtered_data.min()))
+                y_max = st.number_input("Limite massimo asse Y", value=float(filtered_data.max()))
 
                 fig1.update_xaxes(range=[x_min, x_max])
                 fig1.update_yaxes(range=[y_min, y_max])
@@ -103,12 +103,12 @@ if uploaded_file:
                 )
                 st.plotly_chart(fig2, use_container_width=True)
                 # Assi X (tempo)
-                x_min = st.sidebar.number_input("Limite minimo asse X (secondi)", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()))
-                x_max = st.sidebar.number_input("Limite massimo asse X (secondi)", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()))
+                x_min = st.number_input("Limite minimo asse X (secondi)", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()))
+                x_max = st.number_input("Limite massimo asse X (secondi)", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()))
                 
                 # Assi Y (corrente, in μA o unità che usi)
-                y_min = st.sidebar.number_input("Limite minimo asse Y", value=float(normalized_data.min()))
-                y_max = st.sidebar.number_input("Limite massimo asse Y", value=float(normalized_data.max()))
+                y_min = st.number_input("Limite minimo asse Y", value=float(normalized_data.min()))
+                y_max = st.number_input("Limite massimo asse Y", value=float(normalized_data.max()))
 
                 fig2.update_xaxes(range=[x_min, x_max])
                 fig2.update_yaxes(range=[y_min, y_max])
@@ -182,12 +182,12 @@ if uploaded_file:
                 }))
 
                 # Assi X (tempo)
-                x_min = st.sidebar.number_input("Limite minimo asse X (secondi)", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()))
-                x_max = st.sidebar.number_input("Limite massimo asse X (secondi)", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()))
+                x_min = st.number_input("Limite minimo asse X (secondi)", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()))
+                x_max = st.number_input("Limite massimo asse X (secondi)", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()))
                 
                 # Assi Y (corrente, in μA o unità che usi)
-                y_min = st.sidebar.number_input("Limite minimo asse Y", value=float(filtered_data.min()))
-                y_max = st.sidebar.number_input("Limite massimo asse Y", value=float(filtered_data.max()))
+                y_min = st.number_input("Limite minimo asse Y", value=float(filtered_data.min()))
+                y_max = st.number_input("Limite massimo asse Y", value=float(filtered_data.max()))
 
                 fig1.update_xaxes(range=[x_min, x_max])
                 fig1.update_yaxes(range=[y_min, y_max])
