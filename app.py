@@ -59,7 +59,7 @@ if uploaded_file:
                 hovermode="x unified"
             )
 
-st.plotly_chart(fig2, use_container_width=True)
+            st.plotly_chart(fig2, use_container_width=True)
             fig1, ax1 = plt.subplots()
             ax1.plot(filtered_time, filtered_data, marker='o', linestyle='-')
             ax1.set_xlabel("Tempo (s)")
