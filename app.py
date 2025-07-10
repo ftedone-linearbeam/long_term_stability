@@ -95,9 +95,9 @@ if uploaded_file:
                 col1, col2 = st.columns(2)
                 with col1:
                     x_min = st.number_input("Limite minimo asse X (s)", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()))
-                    x_max = st.number_input("Limite massimo asse X (s)", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()))
-                with col2:
                     y_min = st.number_input("Limite minimo asse Y", value=float(filtered_data.min()))
+                with col2:
+                    x_max = st.number_input("Limite massimo asse X (s)", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()))
                     y_max = st.number_input("Limite massimo asse Y", value=float(filtered_data.max()))
                 fig1.update_xaxes(range=[x_min, x_max])
                 fig1.update_yaxes(range=[y_min, y_max])
@@ -110,9 +110,9 @@ if uploaded_file:
                 col1, col2 = st.columns(2)
                 with col1:
                     x_min = st.number_input("Limite minimo asse X (s)", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()))
-                    x_max = st.number_input("Limite massimo asse X (s)", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()))
-                with col2:
                     y_min = st.number_input("Limite minimo asse Y", value=float(normalized_data.min()))
+                with col2:
+                    x_max = st.number_input("Limite massimo asse X (s)", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()))
                     y_max = st.number_input("Limite massimo asse Y", value=float(normalized_data.max()))
                 fig1.update_xaxes(range=[x_min, x_max])
                 fig1.update_yaxes(range=[y_min, y_max])
@@ -123,9 +123,9 @@ if uploaded_file:
             col1, col2 = st.columns(2)
             with col1:
                 x_min = st.number_input("Limite minimo asse X fig2 (s)", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()))
-                x_max = st.number_input("Limite massimo asse X fig2 (s)", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()))
-            with col2:
                 y_min = st.number_input("Limite minimo asse Y fig2", value=float(normalized_data.min()))
+            with col2:
+                x_max = st.number_input("Limite massimo asse X fig2 (s)", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()))
                 y_max = st.number_input("Limite massimo asse Y fig2", value=float(normalized_data.max()))
             fig2.update_xaxes(range=[x_min, x_max])
             fig2.update_yaxes(range=[y_min, y_max])
