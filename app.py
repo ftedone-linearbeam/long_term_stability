@@ -59,7 +59,7 @@ if uploaded_file:
             filtered_time = time[mask]
 
             # Normalizzazione rispetto alla media
-                if not is_normalized:
+            if not is_normalized:
                 # Plot originale
                 st.subheader("Grafico delle misurazioni filtrate")
 
