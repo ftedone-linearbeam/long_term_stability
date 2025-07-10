@@ -34,7 +34,7 @@ if uploaded_file:
             st.sidebar.header("Filtri")
             min_val = float(data.min())
             max_val = float(data.max())
-            
+            st.write(abs(data.mean()-1))
             if abs(data.mean()-1)<0.2:
                 is_normalized=st.sidebar.checkbox("I dati sono già normalizzati?", value=False)
             else:
