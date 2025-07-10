@@ -65,6 +65,7 @@ if uploaded_file:
 
             # Statistiche
             if not filtered_data.empty:
+                istanti=filtered_data.length()
                 minimo = filtered_data.min()
                 massimo = filtered_data.max()
                 std_dev = filtered_data.std()
@@ -74,13 +75,14 @@ if uploaded_file:
 
                 st.subheader("Statistiche")
                 st.markdown(f"""
+                - **Numero istanti analizzati**: {istanti}
                 - **Minimo**: {minimo:.3f} mA  
                 - **Massimo**: {massimo:.3f} mA  
                 - **Media**: {media:.3f} mA  
                 - **Media normalizzata**: {media_norm:.3f} mA
                 - **Deviazione standard**: {std_dev:.3f} mA  
                 - **Flatness**: {flatness:.3f}
-                - **Totale secondi fuori soglia**: {durata_fuori_soglia} s")
+                - **Totale secondi fuori soglia (% sul totale)**: {durata_fuori_soglia} s ({}%)
                 """)
 
                 # Punto 1: Istogramma distribuzione
