@@ -71,22 +71,24 @@ if uploaded_file:
         data = df[selected_column].dropna().reset_index(drop=True)
 
         if not data.empty:
-            time = np.arange(len(data))
-            min_val, max_val = float(data.min()), float(data.max())
-
             st.sidebar.header("Filtri")
             if abs(data.mean() - 1) < 0.2:
                 st.session_state["normalized_estimation"] = True
+                norm_data=data
             else:
                 st.session_state["normalized_estimation"] = False
+                norm_data=data/data.mean()
+            
+            time = np.arange(len(data))
+            min_val, max_val = float(data.min()), float(data.max())
             
             is_normalized = st.sidebar.checkbox("I dati sono già normalizzati", value=st.session_state["normalized_estimation"],key="checkbox_normalized")
-
+            
             soglia_inf = st.sidebar.number_input("Soglia inferiore", min_val, max_val, min_val)
             soglia_sup = st.sidebar.number_input("Soglia superiore", min_val, max_val, max_val)
 
             mask = (data >= soglia_inf) & (data <= soglia_sup)
-            filtered_data = data[mask]
+            filtered_data = norm_data[mask]
             filtered_time = time[mask]
 
             if not is_normalized:
@@ -105,6 +107,7 @@ if uploaded_file:
                 normalized_data = filtered_data / filtered_data.mean()
             else:
                 normalized_data = filtered_data
+                filtered_time = time[mask]
                 st.subheader("Grafico delle misurazioni filtrate e normalizzate")
                 fig1 = plot_interactive(filtered_time, normalized_data, "Tempo (s)", "Valori normalizzati (-)", color='blue')
                 col1, col2 = st.columns(2)
