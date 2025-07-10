@@ -36,7 +36,7 @@ if uploaded_file:
             st.sidebar.header("Filtri")
             min_val = float(data.min())
             max_val = float(data.max())
-            soglia_inf = st.sidebar.number_input("Soglia inferiore (μA)", min_val, max_val, min_val)
+            soglia_inf = st.sidebar.number_input("Soglia inferiore (>="+str(min_value)+"μA)", min_val, max_val, min_val)
             soglia_sup = st.sidebar.number_input("Soglia superiore (μA)", min_val, max_val, max_val)
 
             # Filtraggio dati
