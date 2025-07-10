@@ -113,7 +113,8 @@ if uploaded_file:
             ax3.plot(filtered_time, normalized_data, marker='o', linestyle='-', color='green')
             ax3.set_xlabel("Tempo (s)")
             ax3.set_ylabel("(-)")
-            ax3.grid(True)fig3.savefig(img_buffer, format="png", bbox_inches="tight")
+            ax3.grid(True)
+            fig3.savefig(img_buffer, format="png", bbox_inches="tight")
             img_buffer.seek(0)
 
             st.download_button(
