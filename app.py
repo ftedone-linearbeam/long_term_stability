@@ -1,4 +1,9 @@
-st.title("Analisi Misurazioni Elettriche (mA)")
+import streamlit as st
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+st.title("analisi misurazioni elettriche (mA)")
 
 # Caricamento file Excel
 uploaded_file = st.file_uploader("Carica file Excel", type=["xlsx", "xls"])
