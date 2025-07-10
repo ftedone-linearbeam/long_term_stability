@@ -53,7 +53,6 @@ if uploaded_file:
                           name='Filtrato',
                           line=dict(color='green')))
             fig1.update_layout(
-                title="Grafico delle misurazioni filtrate",
                 xaxis_title="Tempo (s)",
                 yaxis_title="(-)",
                 hovermode="x unified"
