@@ -34,7 +34,7 @@ if uploaded_file:
             st.sidebar.header("Filtri")
             min_val = float(data.min())
             max_val = float(data.max())
-            st.write(abs(data.mean()-1))
+
             if abs(data.mean()-1)<0.2:
                 is_normalized=st.sidebar.checkbox("I dati sono già normalizzati?", value=False)
             else:
@@ -68,69 +68,69 @@ if uploaded_file:
             st.plotly_chart(fig1, use_container_width=True)
 
             # Normalizzazione rispetto alla media
-            if not filtered_data.empty:
+            if not filtered_data.empty and not is_normalized:
                 media = filtered_data.mean()
                 normalized_data = filtered_data / media
                 media_norm=normalized_data.mean()
 
-            # Plot normalizzato
-            st.subheader("Grafico delle misurazioni normalizzate")
-
-            fig2 = go.Figure()
-            fig2.add_trace(go.Scatter(x=filtered_time, y=normalized_data,
-                          mode='lines+markers',
-                          name='Filtrato',
-                          line=dict(color='green')))
-            fig2.update_layout(
-                xaxis_title="Tempo (s)",
-                yaxis_title="(-)",
-                hovermode="x unified"
-            )
-            st.plotly_chart(fig2, use_container_width=True)
+                # Plot normalizzato
+                st.subheader("Grafico delle misurazioni normalizzate")
+    
+                fig2 = go.Figure()
+                fig2.add_trace(go.Scatter(x=filtered_time, y=normalized_data,
+                              mode='lines+markers',
+                              name='Filtrato',
+                              line=dict(color='green')))
+                fig2.update_layout(
+                    xaxis_title="Tempo (s)",
+                    yaxis_title="(-)",
+                    hovermode="x unified"
+                )
+                st.plotly_chart(fig2, use_container_width=True)
             
-            # Tabella filtrata
-            st.subheader("Dati Filtrati")
-            st.dataframe(pd.DataFrame({
-                "Tempo (s)": filtered_time,
-                "Corrente (μA)": filtered_data,
-                "Dati normalizzati (-)": normalized_data
-            }))
+                # Tabella filtrata
+                st.subheader("Dati Filtrati")
+                st.dataframe(pd.DataFrame({
+                    "Tempo (s)": filtered_time,
+                    "Corrente (μA)": filtered_data,
+                    "Dati normalizzati (-)": normalized_data
+                }))
 
-            st.subheader("Download")
+                st.subheader("Download")
 
-            # ---- Esportazione in Excel ----
-            export_df = pd.DataFrame({
-                "Tempo (s)": filtered_time,
-                "Corrente (μA)": filtered_data,
-                "Dati normalizzati (-)": normalized_data
-            })
-            excel_buffer = BytesIO()
-            with pd.ExcelWriter(excel_buffer, engine='xlsxwriter') as writer:
-                export_df.to_excel(writer, index=False, sheet_name="Normalizzati")
+                # ---- Esportazione in Excel ----
+                export_df = pd.DataFrame({
+                    "Tempo (s)": filtered_time,
+                    "Corrente (μA)": filtered_data,
+                    "Dati normalizzati (-)": normalized_data
+                })
+                excel_buffer = BytesIO()
+                with pd.ExcelWriter(excel_buffer, engine='xlsxwriter') as writer:
+                    export_df.to_excel(writer, index=False, sheet_name="Normalizzati")
 
-            st.download_button(
-                label="Scarica dati normalizzati in Excel",
-                data=excel_buffer.getvalue(),
-                file_name="dati_normalizzati.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
+                st.download_button(
+                    label="Scarica dati normalizzati in Excel",
+                    data=excel_buffer.getvalue(),
+                    file_name="dati_normalizzati.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                )
 
-            # ---- Esportazione grafico come immagine PNG ----
-            img_buffer = BytesIO()
-            fig3, ax3 = plt.subplots()
-            ax3.plot(filtered_time, normalized_data, marker='o', linestyle='-', color='green')
-            ax3.set_xlabel("Tempo (s)")
-            ax3.set_ylabel("(-)")
-            ax3.grid(True)
-            fig3.savefig(img_buffer, format="png", bbox_inches="tight")
-            img_buffer.seek(0)
+                # ---- Esportazione grafico come immagine PNG ----
+                img_buffer = BytesIO()
+                fig3, ax3 = plt.subplots()
+                ax3.plot(filtered_time, normalized_data, marker='o', linestyle='-', color='green')
+                ax3.set_xlabel("Tempo (s)")
+                ax3.set_ylabel("(-)")
+                ax3.grid(True)
+                fig3.savefig(img_buffer, format="png", bbox_inches="tight")
+                img_buffer.seek(0)
 
-            st.download_button(
-                label="Scarica grafico normalizzato (PNG)",
-                data=img_buffer,
-                file_name="grafico_normalizzato.png",
-                mime="image/png"
-            )
+                st.download_button(
+                    label="Scarica grafico normalizzato (PNG)",
+                    data=img_buffer,
+                    file_name="grafico_normalizzato.png",
+                    mime="image/png"
+                )
             
             # Statistiche
             if not filtered_data.empty:
