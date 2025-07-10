@@ -13,7 +13,7 @@ st.title("Long term stability analysis (mA)")
 uploaded_file = st.file_uploader("Carica file Excel", type=["xlsx", "xls"])
 if uploaded_file:
     st.sidebar.subheader("Opzioni file")
-    has_header = st.sidebar.checkbox("Il file ha intestazione?", value=True)
+    has_header = st.sidebar.checkbox("Il file ha intestazione?", value=False)
 
     try:
         if has_header:
@@ -59,7 +59,8 @@ if uploaded_file:
                 hovermode="x unified"
             )
 
-            st.plotly_chart(fig2, use_container_width=True)
+            st.plotly_chart(fig1, use_container_width=True)
+            
             fig1, ax1 = plt.subplots()
             ax1.plot(filtered_time, filtered_data, marker='o', linestyle='-')
             ax1.set_xlabel("Tempo (s)")
