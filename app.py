@@ -153,11 +153,19 @@ if uploaded_file:
                     hovermode="x unified"
                 )
                 st.plotly_chart(fig1, use_container_width=True)
+                # Tabella filtrata
+                st.subheader("Dati Filtrati")
+                st.dataframe(pd.DataFrame({
+                    "Tempo (s)": filtered_time,
+                    "Corrente (-)": filtered_data
+                }))
+
+                st.subheader("Download")
                 
                 # ---- Esportazione in Excel ----
                 export_df = pd.DataFrame({
                     "Tempo (s)": filtered_time,
-                    "Corrente (μA)": filtered_data,
+                    "Corrente (-)": filtered_data
                 })
                 excel_buffer = BytesIO()
                 with pd.ExcelWriter(excel_buffer, engine='xlsxwriter') as writer:
