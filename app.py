@@ -94,11 +94,11 @@ if uploaded_file:
                 fig1 = plot_interactive(filtered_time, filtered_data, "Tempo (s)", "Corrente (μA)", color='blue')
                 col1, col2 = st.columns(2)
                 with col1:
-                    x_min = st.number_input("Limite minimo asse X", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()),key=1)
-                    y_min = st.number_input("Limite minimo asse Y", value=float(filtered_data.min()),key=2)
+                    x_min = st.number_input("Limite minimo asse X", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()),key="1")
+                    y_min = st.number_input("Limite minimo asse Y", value=float(filtered_data.min()),key="2")
                 with col2:
-                    x_max = st.number_input("Limite massimo asse X", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()),key=3)
-                    y_max = st.number_input("Limite massimo asse Y", value=float(filtered_data.max()).key=4)
+                    x_max = st.number_input("Limite massimo asse X", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()),key="3")
+                    y_max = st.number_input("Limite massimo asse Y", value=float(filtered_data.max()).key="4")
                 fig1.update_xaxes(range=[x_min, x_max])
                 fig1.update_yaxes(range=[y_min, y_max])
                 st.plotly_chart(fig1, use_container_width=True)
@@ -109,11 +109,11 @@ if uploaded_file:
                 fig1 = plot_interactive(filtered_time, normalized_data, "Tempo (s)", "Valori normalizzati (-)", color='blue')
                 col1, col2 = st.columns(2)
                 with col1:
-                    x_min = st.number_input("Limite minimo asse X", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()),key=5)
-                    y_min = st.number_input("Limite minimo asse Y", value=float(normalized_data.min()),key=6)
+                    x_min = st.number_input("Limite minimo asse X", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()),key="5")
+                    y_min = st.number_input("Limite minimo asse Y", value=float(normalized_data.min()),key="6")
                 with col2:
-                    x_max = st.number_input("Limite massimo asse X", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()),key=7)
-                    y_max = st.number_input("Limite massimo asse Y", value=float(normalized_data.max()),key=8)
+                    x_max = st.number_input("Limite massimo asse X", min_value=0, max_value=int(time.max()), value=int(filtered_time.max()),key="7")
+                    y_max = st.number_input("Limite massimo asse Y", value=float(normalized_data.max()),key="8")
                 fig1.update_xaxes(range=[x_min, x_max])
                 fig1.update_yaxes(range=[y_min, y_max])
                 st.plotly_chart(fig1, use_container_width=True)
