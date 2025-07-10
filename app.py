@@ -174,7 +174,7 @@ if uploaded_file:
                     hovermode="x unified"
                 )
                 st.plotly_chart(fig1, use_container_width=True)
-                [Col1,Col2]=st.colums(2)
+                [Col1,Col2]=st.columns(2)
                 with Col1:
                     # Assi X (tempo)
                     x_min = st.number_input("Limite minimo asse X (secondi)", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()))
