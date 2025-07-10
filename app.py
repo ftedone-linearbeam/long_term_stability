@@ -53,6 +53,7 @@ if uploaded_file:
             if not filtered_data.empty:
                 media = filtered_data.mean()
                 normalized_data = (filtered_data - media) / media
+                media_norm=normalized_data.mean()
 
             # Tabella filtrata
             st.subheader("Dati Filtrati")
@@ -74,6 +75,7 @@ if uploaded_file:
                 - **Minimo**: {minimo:.3f} mA  
                 - **Massimo**: {massimo:.3f} mA  
                 - **Media**: {media:.3f} mA  
+                - **Media normalizzata**: {media_norm:.3f} mA
                 - **Deviazione standard**: {std_dev:.3f} mA  
                 - **Flatness**: {flatness:.3f}
                 """)
