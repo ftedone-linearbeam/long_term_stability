@@ -132,7 +132,6 @@ if uploaded_file:
             st.plotly_chart(fig2, use_container_width=True)
 
             media_norm = normalized_data.mean()
-            st.markdown(f"**Media normalizzata**: {media_norm:.4f}")
 
             result_df = pd.DataFrame({
                 "Tempo (s)": filtered_time,
