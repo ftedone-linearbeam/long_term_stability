@@ -28,8 +28,8 @@ if uploaded_file:
         columns = df.columns.tolist()
         selected_column = st.selectbox("Seleziona la colonna delle misurazioni (μA)", columns)
 
+        data = df[selected_column].dropna().reset_index(drop=True)
         if selected_column and not data.empty:
-            data = df[selected_column].dropna().reset_index(drop=True)
             time = np.arange(len(data))
 
             # Sidebar filtri
