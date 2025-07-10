@@ -90,7 +90,6 @@ if uploaded_file:
             if not is_normalized:
                 st.subheader("Grafico delle misurazioni filtrate")
                 fig1 = plot_interactive(filtered_time, filtered_data, "Tempo (s)", "Corrente (μA)", color='blue')
-                st.plotly_chart(fig1, use_container_width=True)
                 col1, col2 = st.columns(2)
                 with col1:
                     x_min = st.number_input("Limite minimo asse X (s)", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()))
@@ -106,7 +105,6 @@ if uploaded_file:
                 normalized_data = filtered_data
                 st.subheader("Grafico delle misurazioni filtrate e normalizzate")
                 fig1 = plot_interactive(filtered_time, normalized_data, "Tempo (s)", "Valori normalizzati (-)", color='blue')
-                st.plotly_chart(fig1, use_container_width=True)
                 col1, col2 = st.columns(2)
                 with col1:
                     x_min = st.number_input("Limite minimo asse X (s)", min_value=0, max_value=int(time.max()), value=int(filtered_time.min()))
@@ -116,6 +114,7 @@ if uploaded_file:
                     y_max = st.number_input("Limite massimo asse Y", value=float(normalized_data.max()))
                 fig1.update_xaxes(range=[x_min, x_max])
                 fig1.update_yaxes(range=[y_min, y_max])
+                st.plotly_chart(fig1, use_container_width=True)
 
             st.subheader("Grafico delle misurazioni normalizzate")
             fig2 = plot_interactive(filtered_time, normalized_data, "Tempo (s)", "(-)", color='green')
