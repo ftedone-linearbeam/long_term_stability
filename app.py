@@ -154,6 +154,22 @@ if uploaded_file:
                 )
                 st.plotly_chart(fig1, use_container_width=True)
                 
+                # ---- Esportazione in Excel ----
+                export_df = pd.DataFrame({
+                    "Tempo (s)": filtered_time,
+                    "Corrente (μA)": filtered_data,
+                })
+                excel_buffer = BytesIO()
+                with pd.ExcelWriter(excel_buffer, engine='xlsxwriter') as writer:
+                    export_df.to_excel(writer, index=False, sheet_name="Normalizzati")
+
+                st.download_button(
+                    label="Scarica dati normalizzati in Excel",
+                    data=excel_buffer.getvalue(),
+                    file_name="dati_normalizzati.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                )
+
                 # ---- Esportazione grafico come immagine PNG ----
                 img_buffer = BytesIO()
                 fig3, ax3 = plt.subplots()
