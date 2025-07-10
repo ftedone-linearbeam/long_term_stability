@@ -7,6 +7,9 @@ from io import BytesIO
 import tempfile
 import plotly.graph_objs as go
 
+if "nomalized_estimation" not in st.session_state:
+    st.session_state["nomalized_estimation"] = False
+
 st.title("Long term stability analysis (μA)")
 
 # Caricamento file Excel
@@ -37,9 +40,11 @@ if uploaded_file:
             st.write(abs(data.mean()-1))
             st.write(abs(data.mean()-1)<0.2)
             if abs(data.mean()-1)<0.2:
-                is_normalized=st.sidebar.checkbox("I dati sono già normalizzati?", value=False)
+                st.session_state["nomalized_estimation"]=False
             else:
-                is_normalized=st.sidebar.checkbox("I dati sono già normalizzati?", value=True)
+                st.session_state["nomalized_estimation"]=True
+                
+            is_normalized=st.sidebar.checkbox("I dati sono già normalizzati?", value=st.session_state["nomalized_estimation"])
 
             if is_normalized:
                 soglia_inf = st.sidebar.number_input("Soglia inferiore (>="+f"{min_val:.2f}"+")", min_val, max_val, min_val)
