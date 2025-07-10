@@ -55,6 +55,15 @@ if uploaded_file:
                 normalized_data = filtered_data / media
                 media_norm=normalized_data.mean()
 
+            # Plot normalizzato
+            st.subheader("Grafico delle misurazioni normalizzate")
+            fig1, ax1 = plt.subplots()
+            ax1.plot(filtered_time, 100*normalized_data, marker='o', linestyle='-')
+            ax1.set_xlabel("Tempo (s)")
+            ax1.set_ylabel("Percentuale (%)")
+            ax1.grid(True)
+            st.pyplot(fig2)
+            
             # Tabella filtrata
             st.subheader("Dati Filtrati")
             st.dataframe(pd.DataFrame({
